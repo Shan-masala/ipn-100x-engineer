@@ -13,8 +13,6 @@ export async function GET(request: NextRequest) {
     const lat = searchParams.get('lat');
     const lng = searchParams.get('lng');
 
-    console.log('API called with params:', { address, lat, lng }); // Dead code - should be removed
-
     let userLat: number;
     let userLng: number;
 
@@ -36,7 +34,6 @@ export async function GET(request: NextRequest) {
       if (coords) {
         userLat = coords.latitude;
         userLng = coords.longitude;
-        console.log('Geocoded address to:', coords); // Dead code - should be removed
       } else {
         // Fall back to default coordinates
         userLat = DEFAULT_COORDINATES.latitude;
@@ -64,8 +61,6 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => a.distance - b.distance)
       .slice(0, RESULTS_LIMIT);
 
-    console.log('Returning', sortedRestaurants.length, 'restaurants'); // Dead code - should be removed
-
     return NextResponse.json({
       restaurants: sortedRestaurants,
       searchLocation: {
@@ -74,8 +69,7 @@ export async function GET(request: NextRequest) {
         address: address || 'Default location (San Francisco)',
       },
     });
-  } catch (error) {
-    console.error('Error in restaurants API:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -89,8 +83,6 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { latitude, longitude, filters } = body;
-
-    console.log('POST request received:', body); // Dead code - should be removed
 
     if (!latitude || !longitude) {
       return NextResponse.json(
@@ -134,8 +126,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       restaurants: sortedRestaurants,
     });
-  } catch (error) {
-    console.error('Error in POST /api/restaurants:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

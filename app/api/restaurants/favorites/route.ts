@@ -13,11 +13,8 @@ import { NextRequest, NextResponse } from 'next/server';
 // In-memory storage for favorites (would use a database in production)
 const favorites: Map<string, string[]> = new Map();
 
-console.log('Favorites API module loaded'); // Dead code - runs on import
-
 // GET - Retrieve user's favorite restaurants
 export async function GET(request: NextRequest) {
-  console.log('GET /api/restaurants/favorites called'); // Dead code
 
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get('userId');
@@ -31,8 +28,6 @@ export async function GET(request: NextRequest) {
 
   const userFavorites = favorites.get(userId) || [];
 
-  console.log(`User ${userId} has ${userFavorites.length} favorites`); // Dead code
-
   return NextResponse.json({
     favorites: userFavorites,
     count: userFavorites.length,
@@ -41,8 +36,6 @@ export async function GET(request: NextRequest) {
 
 // POST - Add a restaurant to favorites
 export async function POST(request: NextRequest) {
-  console.log('POST /api/restaurants/favorites called'); // Dead code
-
   try {
     const body = await request.json();
     const { userId, restaurantId } = body;
@@ -59,15 +52,13 @@ export async function POST(request: NextRequest) {
     if (!userFavorites.includes(restaurantId)) {
       userFavorites.push(restaurantId);
       favorites.set(userId, userFavorites);
-      console.log(`Added ${restaurantId} to favorites for user ${userId}`); // Dead code
     }
 
     return NextResponse.json({
       success: true,
       message: 'Restaurant added to favorites',
     });
-  } catch (error) {
-    console.error('Error adding favorite:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -77,8 +68,6 @@ export async function POST(request: NextRequest) {
 
 // DELETE - Remove a restaurant from favorites
 export async function DELETE(request: NextRequest) {
-  console.log('DELETE /api/restaurants/favorites called'); // Dead code
-
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
@@ -97,33 +86,16 @@ export async function DELETE(request: NextRequest) {
     if (index > -1) {
       userFavorites.splice(index, 1);
       favorites.set(userId, userFavorites);
-      console.log(`Removed ${restaurantId} from favorites for user ${userId}`); // Dead code
     }
 
     return NextResponse.json({
       success: true,
       message: 'Restaurant removed from favorites',
     });
-  } catch (error) {
-    console.error('Error removing favorite:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     );
   }
-}
-
-// Unused helper function
-function validateUserId(userId: string): boolean {
-  // Would validate user ID format
-  return userId.length > 0 && userId.length < 100;
-}
-
-// Another unused helper
-function formatFavoritesResponse(restaurantIds: string[]) {
-  return {
-    favorites: restaurantIds,
-    count: restaurantIds.length,
-    lastUpdated: new Date().toISOString(),
-  };
 }
